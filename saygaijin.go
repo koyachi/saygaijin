@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/koyachi/go-romankana"
 	"log"
@@ -9,7 +10,18 @@ import (
 )
 
 func main() {
-	s := romankana.KanaRoman(os.Args[1])
+	if len(os.Args) == 1 {
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			say(scanner.Text())
+		}
+	} else {
+		say(os.Args[1])
+	}
+}
+
+func say(input string) {
+	s := romankana.KanaRoman(input)
 	fmt.Println(s)
 	cmd := exec.Command("say", s)
 	err := cmd.Start()
