@@ -31,20 +31,22 @@ func sayString(input string) {
 
 func sayIo(r io.Reader) {
 	bang := make(chan bool)
+	sayDone := make(chan bool)
 	sayStdin, sayCmd := sayStdin()
 	scanner := bufio.NewScanner(r)
 
 	go func() {
 		<-bang
-		fmt.Println("start say command")
+		//fmt.Println("start say command")
 		if err := sayCmd.Start(); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("wait say command")
+		//fmt.Println("wait say command...")
 		if err := sayCmd.Wait(); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("end say command")
+		//fmt.Println("end say command")
+		sayDone <- true
 	}()
 
 	banged := false
@@ -61,7 +63,9 @@ func sayIo(r io.Reader) {
 				banged = true
 			}
 		}
+		sayStdin.Close()
 	}()
+	<-sayDone
 }
 
 // TODO: rename function
