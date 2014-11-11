@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/koyachi/go-romankana"
 	"io"
@@ -30,51 +29,12 @@ func sayString(input string) {
 }
 
 func sayIo(r io.Reader) {
-	bang := make(chan bool)
-	sayDone := make(chan bool)
-	sayStdin, sayCmd := sayStdin()
-	scanner := bufio.NewScanner(r)
-
-	go func() {
-		<-bang
-		//fmt.Println("start say command")
-		if err := sayCmd.Start(); err != nil {
-			log.Fatal(err)
-		}
-		//fmt.Println("wait say command...")
-		if err := sayCmd.Wait(); err != nil {
-			log.Fatal(err)
-		}
-		//fmt.Println("end say command")
-		sayDone <- true
-	}()
-
-	banged := false
-	func() {
-		for scanner.Scan() {
-			t := romankana.KanaRoman(scanner.Text() + " ")
-			fmt.Println(t)
-			_, err := io.WriteString(sayStdin, t)
-			if err != nil {
-				log.Fatal()
-			}
-			if !banged {
-				bang <- true
-				banged = true
-			}
-		}
-		sayStdin.Close()
-	}()
-	<-sayDone
-}
-
-// TODO: rename function
-func sayStdin() (io.WriteCloser, *exec.Cmd) {
-	cmd := exec.Command("say")
-	stdin, err := cmd.StdinPipe()
+	say, err := NewSayCommand()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return stdin, cmd
+	err = say.Run(r)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
