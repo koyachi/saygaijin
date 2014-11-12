@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"strings"
 )
 
 type SayCommand struct {
@@ -39,6 +40,10 @@ func (s *SayCommand) init() error {
 	}
 
 	return nil
+}
+
+func (s *SayCommand) RunString(str string) error {
+	return s.Run(strings.NewReader(str))
 }
 
 func (s *SayCommand) Run(r io.Reader) error {
