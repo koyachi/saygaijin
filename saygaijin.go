@@ -23,6 +23,11 @@ func main() {
 			Value: "",
 			Usage: "Specify the path for an audio file to be written.",
 		},
+		cli.StringFlag{
+			Name:  "voice, vo",
+			Value: "",
+			Usage: "Specify the voice to be used.",
+		},
 	}
 	app.Action = func(c *cli.Context) {
 		str := ""
@@ -35,13 +40,14 @@ func main() {
 			log.Fatal(err)
 		}
 
+		say.OutputFile = c.String("output-file")
+		say.Voice = c.String("voice")
 		if len(str) > 0 {
 			err = say.RunString(str)
 			if err != nil {
 				log.Fatal(err)
 			}
 		} else {
-			say.OutputFile = c.String("output-file")
 			err = say.Run(os.Stdin)
 			if err != nil {
 				log.Fatal(err)

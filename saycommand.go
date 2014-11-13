@@ -17,6 +17,7 @@ type SayCommand struct {
 	chCmdStart chan bool
 	chCmdEnd   chan bool
 	OutputFile string
+	Voice      string
 }
 
 func NewSayCommand() (*SayCommand, error) {
@@ -33,6 +34,9 @@ func (s *SayCommand) init() error {
 	var args []string
 	if len(s.OutputFile) > 0 {
 		args = append(args, "-o", s.OutputFile)
+	}
+	if len(s.Voice) > 0 {
+		args = append(args, "-v", s.Voice)
 	}
 
 	s.cmd = exec.Command("say", args...)
