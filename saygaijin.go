@@ -28,6 +28,11 @@ func main() {
 			Value: "",
 			Usage: "Specify the voice to be used.",
 		},
+		cli.IntFlag{
+			Name:  "rate, r",
+			Value: 0,
+			Usage: "Speech rate to be used, in words per minute.",
+		},
 	}
 	app.Action = func(c *cli.Context) {
 		str := ""
@@ -42,6 +47,10 @@ func main() {
 
 		say.OutputFile = c.String("output-file")
 		say.Voice = c.String("voice")
+		rate := c.Int("rate")
+		if rate != 0 {
+			say.Rate = rate
+		}
 		if len(str) > 0 {
 			err = say.RunString(str)
 			if err != nil {

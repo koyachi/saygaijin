@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -18,6 +19,7 @@ type SayCommand struct {
 	chCmdEnd   chan bool
 	OutputFile string
 	Voice      string
+	Rate       int
 }
 
 func NewSayCommand() (*SayCommand, error) {
@@ -37,6 +39,9 @@ func (s *SayCommand) init() error {
 	}
 	if len(s.Voice) > 0 {
 		args = append(args, "-v", s.Voice)
+	}
+	if s.Rate != 0 {
+		args = append(args, "-r", strconv.Itoa(s.Rate))
 	}
 
 	s.cmd = exec.Command("say", args...)
