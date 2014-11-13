@@ -16,14 +16,11 @@ type SayCommand struct {
 	stdin      io.WriteCloser
 	chCmdStart chan bool
 	chCmdEnd   chan bool
+	OutputFile string
 }
 
 func NewSayCommand() (*SayCommand, error) {
 	s := &SayCommand{}
-	err := s.init()
-	if err != nil {
-		return nil, err
-	}
 
 	return s, nil
 }
@@ -33,7 +30,12 @@ func (s *SayCommand) init() error {
 	s.chCmdStart = make(chan bool)
 	s.chCmdEnd = make(chan bool)
 
-	s.cmd = exec.Command("say")
+	var args []string
+	if len(s.OutputFile) > 0 {
+		args = append(args, "-o", s.OutputFile)
+	}
+
+	s.cmd = exec.Command("say", args...)
 	s.stdin, err = s.cmd.StdinPipe()
 	if err != nil {
 		return err
@@ -47,6 +49,11 @@ func (s *SayCommand) RunString(str string) error {
 }
 
 func (s *SayCommand) Run(r io.Reader) error {
+	err := s.init()
+	if err != nil {
+		return err
+	}
+
 	scanner := bufio.NewScanner(r)
 	go s.startCommand()
 
